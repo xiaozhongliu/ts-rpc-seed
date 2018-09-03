@@ -19,9 +19,9 @@ function register(server: Server, controller: Controller) {
     for (const member of Object.keys(controller)) {
         if (typeof controller[member] !== 'function') continue
 
-        impl[member] = (call: any, callback: Function) => {
+        impl[member] = async (call: any, callback: Function) => {
             try {
-                midwares.execute(
+                await midwares.execute(
                     {
                         controller: controller.service,
                         action: member,
