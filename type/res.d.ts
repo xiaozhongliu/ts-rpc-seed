@@ -1,0 +1,4 @@
+interface Res {
+
+    data?: object
+}

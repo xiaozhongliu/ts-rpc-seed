@@ -1,0 +1,26 @@
+{
+  "name": "ts-rpc-seed",
+  "version": "0.1.0",
+  "description": "a typescript node rpc seed project",
+  "main": "app.ts",
+  "author": "xiaozhongliu",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run watch-node",
+    "build": "npm run watch-ts",
+    "watch-node": "nodemon --inspect dist/app.js",
+    "watch-ts": "tsc -w",
+    "test": "jest --silent --verbose --forceExit"
+  },
+  "dependencies": {
+    "@grpc/proto-loader": "^0.3.0",
+    "dayjs": "^1.7.5",
+    "grpc": "^1.14.1",
+    "log4js": "^3.0.5"
+  },
+  "devDependencies": {
+    "ts-node": "^5.0.1",
+    "typescript": "^3.0.3"
+  }
+}
