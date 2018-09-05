@@ -1,12 +1,17 @@
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'dev'
 
 import grpc from 'grpc'
+import fs from 'fs'
 import config from './config'
 import { proto } from './util'
 import { promisify } from 'util'
 
+const credentials = grpc.credentials.createSsl(
+    fs.readFileSync('./config/cert/ca.crt'),
+    fs.readFileSync('./config/cert/client.key'),
+    fs.readFileSync('./config/cert/client.crt')
+);
 const clientAddress = `localhost:${config.API_PORT}`
-const credentials = grpc.credentials.createInsecure()
 const pack = proto.loadPackage('helloworld')
 const client = new pack.Greeter(clientAddress, credentials)
 
