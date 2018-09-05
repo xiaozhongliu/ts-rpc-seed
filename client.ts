@@ -9,8 +9,8 @@ import { promisify } from 'util'
 const credentials = grpc.credentials.createSsl(
     fs.readFileSync('./config/cert/ca.crt'),
     fs.readFileSync('./config/cert/client.key'),
-    fs.readFileSync('./config/cert/client.crt')
-);
+    fs.readFileSync('./config/cert/client.crt'),
+)
 const clientAddress = `localhost:${config.API_PORT}`
 const pack = proto.loadPackage('helloworld')
 const client = new pack.Greeter(clientAddress, credentials)

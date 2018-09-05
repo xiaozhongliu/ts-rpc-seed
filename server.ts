@@ -3,21 +3,13 @@ if (!process.env.NODE_ENV) process.env.NODE_ENV = 'dev'
 global.rootdir = __dirname.replace('/dist', '')
 
 import grpc from 'grpc'
-import fs from 'fs'
-import register from './register'
 import config from './config'
+import { proto } from './util'
+import register from './register'
 
 const server = new grpc.Server()
 register(server)
 
-const credentials = grpc.ServerCredentials.createSsl(
-    fs.readFileSync('./config/cert/ca.crt'),
-    [{
-        cert_chain: fs.readFileSync('./config/cert/server.crt'),
-        private_key: fs.readFileSync('./config/cert/server.key')
-    }],
-    true
-)
 const serverAddress = `127.0.0.1:${config.API_PORT}`
-server.bind(serverAddress, credentials)
+server.bind(serverAddress, proto.getCredentials())
 server.start()
