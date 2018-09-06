@@ -1,4 +1,4 @@
-import { Service } from './index'
+import { Service, Message } from './index'
 
 export default class Package {
 
@@ -8,4 +8,5 @@ export default class Package {
 
     name: string
     services: Service[] = []
+    messages: Message[] = []
 }

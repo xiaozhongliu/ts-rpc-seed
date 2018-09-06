@@ -1,3 +1,5 @@
+import HelloReply from '../type/helloworld/HelloReply'
+
 export default {
 
     // proto package name
@@ -5,13 +7,17 @@ export default {
     // proto service name
     service: 'Greeter',
 
-    async sayHello(req: Req) {
+    async sayHello(req: HelloRequest) {
         const message = `Hello ${req.body.name}`
-        return { message }
+        return new HelloReply(
+            message,
+        )
     },
 
-    async sayGoodbye(req: Req) {
+    async sayGoodbye(req: HelloRequest) {
         const message = `Goodbye ${req.body.name}`
-        return { message }
+        return new HelloReply(
+            message,
+        )
     },
 }

@@ -83,32 +83,37 @@ function deserialize(src: string): Package {
             continue
         }
         if (isParsingMessage && line === '}') {
-            upodateMessages(pack, currentMessage)
-
+            pack.messages.push(currentMessage)
             isParsingMessage = false
             currentMessage = undefined
             continue
         }
     }
 
-    return pack
+    return upodateMethodsMessages(pack)
 }
 
 function generate(pack: Package) {
     console.log('\nfinal ast: ', JSON.stringify(pack))
 
-    const packDir = `${__dirname}/${pack.name}`
+    const packDir = `${__dirname}/__${pack.name}`
     shell.exec(`rm -rf ${packDir}`)
-    shell.mkdir(packDir)
+    shell.exec(`mkdir ${packDir}`)
+    const typeDir = `type/${pack.name}`
+    shell.exec(`rm -rf ${typeDir}`)
+    shell.exec(`mkdir ${typeDir}`)
 
     /**
      * generate ctrl
      */
-    pack.services.map(service => {
-        const stream = fs.createWriteStream(`${packDir}/${service.name.toLowerCase()}-ctrl.ts`)
+    pack.services.forEach(service => {
+        const fileName = `${service.name.toLowerCase()}-ctrl.ts`
+        const stream = fs.createWriteStream(`${packDir}/${fileName}`)
 
-        stream.write(`export default {
-
+        const imports = service.methods.map(({ response }) => `import ${response.name} from '../type/${pack.name}/${response.name}'`)
+        const distinctImports = [...new Set(imports)]
+        stream.write(`${distinctImports.join('\n')}\n
+export default {\n
     // proto package name
     package: '${pack.name}',
     // proto service name
@@ -118,20 +123,45 @@ function generate(pack: Package) {
         for (const method of service.methods) {
             stream.write(`\n
     async ${ method.name}(req: ${method.request.name}) {
-        return {${ method.response.properties.map(property => `\n            ${property.name}: undefined,`).join()}
-        }
+        return new ${method.response.name}(
+            ${ method.response.properties.map(property => 'undefined,').join('\n            ')}
+        )
     },`,
             )
         }
 
         stream.write('\n}\n')
         stream.end()
+        console.log('\ngenerated ctrl: ', fileName)
     })
 
     /**
      * generate types
      */
+    pack.messages.forEach(message => {
+        const isRequestType = message.name.includes('Request')
+        const fileName = `${message.name}${isRequestType ? '.d' : ''}.ts`
+        const stream = fs.createWriteStream(`${typeDir}/${fileName}`)
 
+        if (isRequestType) {
+            stream.write(`interface ${message.name} extends Req {\n
+    body: {${ message.properties.map(property => `\n        ${property.name}: ${property.type}`).join()}
+    }
+}\n`,
+            )
+        } else {
+            stream.write(`export default class ${message.name} {\n
+    constructor(${ message.properties.map(property => `${property.name}: ${property.type}`).join(', ')}) {
+${ message.properties.map(property => `        this.${property.name} = ${property.name}`).join('\n')}
+    }
+${ message.properties.map(property => `\n    ${property.name}: ${property.type}`).join()}
+}\n`,
+            )
+        }
+
+        stream.end()
+        console.log('generated type: ', fileName)
+    })
 }
 
 function main() {
@@ -146,15 +176,14 @@ main()
 /**
  * helper methods
  */
-function upodateMessages(pack: Package, message: Message) {
+function upodateMethodsMessages(pack: Package) {
     for (const { methods } of pack.services) {
         for (const method of methods) {
-            if (method.request.name === message.name) {
-                method.request = message
-            }
-            if (method.response.name === message.name) {
-                method.response = message
-            }
+            const reqMessage = pack.messages.find(message => method.request.name === message.name)
+            const resMessage = pack.messages.find(message => method.response.name === message.name)
+            method.request = reqMessage
+            method.response = resMessage
         }
     }
+    return pack
 }

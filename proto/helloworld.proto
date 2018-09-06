@@ -8,14 +8,14 @@ option objc_class_prefix = "HLW";
 package helloworld;
 
 service Greeter {
-  rpc sayHello (HelloRequest) returns (HelloReply) {}
-  rpc sayGoodbye (HelloRequest) returns (HelloReply) {}
+    rpc sayHello (HelloRequest) returns (HelloReply) {}
+    rpc sayGoodbye (HelloRequest) returns (HelloReply) {}
 }
 
 message HelloRequest {
-  string name = 1;
+    string name = 1;
 }
 
 message HelloReply {
-  string message = 1;
+    string message = 1;
 }

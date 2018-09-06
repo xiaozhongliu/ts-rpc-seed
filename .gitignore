@@ -14,7 +14,7 @@ results
 tmp
 
 # Build
-public/css/main.css
+codegen/__*
 
 # Coverage reports
 coverage
