@@ -10,7 +10,7 @@ import {
 } from './model'
 
 const src = './proto/greeter.proto'
-function main(src) {
+function main(src: string) {
     try {
         generate(deserialize(src))
     } catch (error) {
