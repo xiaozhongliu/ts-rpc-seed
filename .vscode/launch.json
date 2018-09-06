@@ -17,5 +17,18 @@
                 "${workspaceFolder}/server.ts"
             ]
         },
+        {
+            "name": "codegen",
+            "type": "node",
+            "request": "launch",
+            "protocol": "inspector",
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register"
+            ],
+            "args": [
+                "${workspaceFolder}/codegen/index.ts"
+            ]
+        },
     ]
 }
