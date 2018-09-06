@@ -11,6 +11,9 @@ import {
 
 const src = './proto/helloworld.proto'
 
+/**
+ * deserialize from proto definition to AST
+ */
 function deserialize(src: string): Package {
     let pack = undefined
     let isParsingService = false
@@ -51,7 +54,22 @@ function deserialize(src: string): Package {
         }
         if (isParsingService && /rpc\s+/.test(line)) {
             const [str, name, req, res] = /rpc\s+(.*?)\s+\((.*?)\)\s+returns\s+\((.*?)\)\s+{}/.exec(line)
-            const method = new Method(name, new Message(req), new Message(res))
+
+            let reqMessage
+            let resMessage
+            if (pack.messages.length) {
+                reqMessage = pack.messages.find((message => req === message.name))
+                resMessage = pack.messages.find((message => res === message.name))
+            }
+            if (!reqMessage) {
+                reqMessage = new Message(req)
+                pack.messages.push(reqMessage)
+            }
+            if (!resMessage) {
+                resMessage = new Message(res)
+                pack.messages.push(resMessage)
+            }
+            const method = new Method(name, reqMessage, resMessage)
             currentService.methods.push(method)
 
             console.log('        parsing method: ', name)
@@ -69,8 +87,11 @@ function deserialize(src: string): Package {
         if (!isParsingMessage && line.startsWith('message')) {
             isParsingMessage = true
             const [str, name] = /message\s+(.*?)\s+{/.exec(line)
-            currentMessage = new Message(name)
+            currentMessage = pack.messages.find((message => name === message.name))
 
+            if (!pack) {
+                throw new Error(`proto error: unused message [${name}]`)
+            }
             console.log('    parsing message: ', name)
             continue
         }
@@ -83,7 +104,6 @@ function deserialize(src: string): Package {
             continue
         }
         if (isParsingMessage && line === '}') {
-            pack.messages.push(currentMessage)
             isParsingMessage = false
             currentMessage = undefined
             continue
@@ -93,8 +113,11 @@ function deserialize(src: string): Package {
     return upodateMethodsMessages(pack)
 }
 
+/**
+ * generate ts files from AST
+ */
 function generate(pack: Package) {
-    console.log('\nfinal ast: ', JSON.stringify(pack))
+    console.log('\nfinal AST: ', JSON.stringify(pack))
 
     const packDir = `${__dirname}/__${pack.name}`
     shell.exec(`rm -rf ${packDir}`)
