@@ -9,7 +9,15 @@ import {
     Property,
 } from './model'
 
-const src = './proto/helloworld.proto'
+const src = './proto/greeter.proto'
+function main(src) {
+    try {
+        generate(deserialize(src))
+    } catch (error) {
+        console.log(error)
+    }
+}
+main(src)
 
 /**
  * deserialize from proto definition to AST
@@ -117,7 +125,7 @@ function deserialize(src: string): Package {
  * generate ts files from AST
  */
 function generate(pack: Package) {
-    console.log('\nfinal AST: ', JSON.stringify(pack))
+    console.log('\nfinal AST: ', JSON.stringify(pack, null, '    '))
 
     const packDir = `${__dirname}/__${pack.name}`
     shell.exec(`rm -rf ${packDir}`)
@@ -183,18 +191,9 @@ ${ message.properties.map(property => `\n    ${property.name}: ${property.type}`
         }
 
         stream.end()
-        console.log('generated type: ', fileName)
+        console.log('generated %s: %s', isRequestType ? 'type' : 'class', fileName)
     })
 }
-
-function main() {
-    try {
-        generate(deserialize(src))
-    } catch (error) {
-        console.log(error)
-    }
-}
-main()
 
 /**
  * helper methods

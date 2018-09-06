@@ -12,7 +12,7 @@ const credentials = grpc.credentials.createSsl(
     fs.readFileSync('./config/cert/client.crt'),
 )
 const clientAddress = `localhost:${config.API_PORT}`
-const pack = proto.loadPackage('helloworld')
+const pack = proto.loadPackage('greeter')
 const client = new pack.Greeter(clientAddress, credentials)
 
 const sayHello = promisify(client.sayHello).bind(client)

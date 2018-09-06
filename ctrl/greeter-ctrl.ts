@@ -1,9 +1,9 @@
-import HelloReply from '../type/helloworld/HelloReply'
+import HelloReply from '../type/greeter/HelloReply'
 
 export default {
 
     // proto package name
-    package: 'helloworld',
+    package: 'greeter',
     // proto service name
     service: 'Greeter',
 
