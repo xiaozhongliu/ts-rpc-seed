@@ -1,5 +1,6 @@
 import fs from 'fs'
 import shell from 'shelljs'
+import client from '../util/client'
 import {
     Enum,
     Package,
@@ -9,29 +10,29 @@ import {
     Property,
 } from './model'
 
-const src = './proto/greeter.proto'
-function main(src: string) {
+const proto = 'greeter.proto'
+
+async function main(proto: string) {
     try {
-        generate(deserialize(src))
+        const content = await getOnlineProtoFile(proto)
+        generate(deserialize(content))
     } catch (error) {
         console.log(error)
     }
 }
-main(src)
+main(proto)
 
 /**
  * deserialize from proto definition to AST
  */
-function deserialize(src: string): Package {
+function deserialize(content: string): Package {
     let pack = undefined
     let isParsingService = false
     let currentService = undefined
     let isParsingMessage = false
     let currentMessage = undefined
 
-    const content = fs.readFileSync(src, { encoding: 'utf8' })
-    const lines = content.split('\n')
-    for (const line of lines) {
+    for (const line of content.split('\n')) {
 
         /**
          *  parse package
@@ -163,7 +164,7 @@ export default {\n
 
         stream.write('\n}\n')
         stream.end()
-        console.log('\ngenerated ctrl: ', fileName)
+        console.log('\ngenerated ctrl:', fileName)
     })
 
     /**
@@ -195,9 +196,15 @@ ${ message.properties.map(property => `\n    ${property.name}: ${property.type}`
     })
 }
 
+
 /**
  * helper methods
  */
+function getOnlineProtoFile(filename: string) {
+    const url = `https://raw.githubusercontent.com/xiaozhongliu/ts-rpc-seed/master/proto/${filename}`
+    return client.get(url)
+}
+
 function upodateMethodsMessages(pack: Package) {
     for (const { methods } of pack.services) {
         for (const method of methods) {
