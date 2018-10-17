@@ -10,6 +10,6 @@ import register from './register'
 const server = new grpc.Server()
 register(server)
 
-const serverAddress = `127.0.0.1:${config.API_PORT}`
+const serverAddress = `0.0.0.0:${config.API_PORT}`
 server.bind(serverAddress, proto.getCredentials())
 server.start()
