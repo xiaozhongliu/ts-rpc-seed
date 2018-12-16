@@ -1,8 +1,8 @@
-import base from './base'
-import dev from './dev'
-import int from './int'
-import qa from './qa'
-import prod from './prod'
+import base from './config.default'
+import dev from './config.dev'
+import int from './config.test'
+import qa from './config.stage'
+import prod from './config.prod'
 
 const envs: Indexed = { dev, int, qa, prod }
 const env = process.env.NODE_ENV
