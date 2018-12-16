@@ -10,8 +10,6 @@ import {
     Property,
 } from './model'
 
-const proto = 'greeter.proto'
-
 async function main(proto: string) {
     try {
         const content = await getOnlineProtoFile(proto)
@@ -20,17 +18,17 @@ async function main(proto: string) {
         console.log(error)
     }
 }
-main(proto)
+main('greeter.proto')
 
 /**
  * deserialize from proto definition to AST
  */
 function deserialize(content: string): Package {
-    let pack = undefined
+    let pack
     let isParsingService = false
-    let currentService = undefined
+    let currentService
     let isParsingMessage = false
-    let currentMessage = undefined
+    let currentMessage
 
     for (const line of content.split('\n')) {
 
@@ -38,7 +36,7 @@ function deserialize(content: string): Package {
          *  parse package
          */
         if (!pack && line.startsWith('package')) {
-            const [str, name] = /package\s+(.*?);/.exec(line)
+            const name = /package\s+(.*?);/.exec(line)![1]
             pack = new Package(name)
 
             console.log('\nparsing package: ', pack.name)
@@ -54,7 +52,7 @@ function deserialize(content: string): Package {
             }
 
             isParsingService = true
-            const [str, name] = /service\s+(.*?)\s+{/.exec(line)
+            const name = /service\s+(.*?)\s+{/.exec(line)![1]
             currentService = new Service(name, pack.name)
             pack.services.push(currentService)
 
@@ -62,13 +60,14 @@ function deserialize(content: string): Package {
             continue
         }
         if (isParsingService && /rpc\s+/.test(line)) {
-            const [str, name, req, res] = /rpc\s+(.*?)\s+\((.*?)\)\s+returns\s+\((.*?)\)\s+{}/.exec(line)
+            // @ts-ignore
+            const [str, name, req, res] = /rpc\s+(.*?)\s+\((.*?)\)\s+returns\s+\((.*?)\)\s+{}/.exec(line)!
 
             let reqMessage
             let resMessage
             if (pack.messages.length) {
-                reqMessage = pack.messages.find((message => req === message.name))
-                resMessage = pack.messages.find((message => res === message.name))
+                reqMessage = pack.messages.find(message => req === message.name)
+                resMessage = pack.messages.find(message => res === message.name)
             }
             if (!reqMessage) {
                 reqMessage = new Message(req)
@@ -95,8 +94,8 @@ function deserialize(content: string): Package {
          */
         if (!isParsingMessage && line.startsWith('message')) {
             isParsingMessage = true
-            const [str, name] = /message\s+(.*?)\s+{/.exec(line)
-            currentMessage = pack.messages.find((message => name === message.name))
+            const name = /message\s+(.*?)\s+{/.exec(line)![1]
+            currentMessage = pack.messages.find(message => name === message.name)
 
             if (!pack) {
                 throw new Error(`proto error: unused message [${name}]`)
@@ -105,7 +104,8 @@ function deserialize(content: string): Package {
             continue
         }
         if (isParsingMessage && line !== '}') {
-            const [str, type, name, binaryId] = /\s+(.*?)\s+(.*?)\s+=\s+(.*?);/.exec(line)
+            // @ts-ignore
+            const [str, type, name, binaryId] = /\s+(.*?)\s+(.*?)\s+=\s+(.*?);/.exec(line)!
             const property = new Property(name, type, parseInt(binaryId))
             currentMessage.properties.push(property)
 
@@ -129,11 +129,8 @@ function generate(pack: Package) {
     console.log('\nfinal AST: ', JSON.stringify(pack, null, '    '))
 
     const packDir = `${__dirname}/__${pack.name}`
-    shell.exec(`rm -rf ${packDir}`)
-    shell.exec(`mkdir ${packDir}`)
     const typeDir = `type/${pack.name}`
-    shell.exec(`rm -rf ${typeDir}`)
-    shell.exec(`mkdir ${typeDir}`)
+    recreateDirs(packDir, typeDir)
 
     /**
      * generate ctrl
@@ -156,7 +153,7 @@ export default {\n
             stream.write(`\n
     async ${ method.name}(req: ${method.request.name}) {
         return new ${method.response.name}(
-            ${ method.response.properties.map(property => 'undefined,').join('\n            ')}
+            ${ method.response.properties.map(property => 'null,').join('\n            ')}
         )
     },`,
             )
@@ -210,9 +207,16 @@ function upodateMethodsMessages(pack: Package) {
         for (const method of methods) {
             const reqMessage = pack.messages.find(message => method.request.name === message.name)
             const resMessage = pack.messages.find(message => method.response.name === message.name)
-            method.request = reqMessage
-            method.response = resMessage
+            method.request = reqMessage as Message
+            method.response = resMessage as Message
         }
     }
     return pack
+}
+
+function recreateDirs(...dirs: string[]) {
+    dirs.forEach(dir => {
+        shell.exec(`rm -rf ${dir}`)
+        shell.exec(`mkdir -p ${dir}`)
+    })
 }
