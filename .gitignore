@@ -1,38 +1,12 @@
-lib-cov
-*.seed
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.gz
-*.swp
-
-pids
-logs
-results
-tmp
-
-# Build
-codegen/__*
-
-# Coverage reports
-coverage
-
-# API keys and secrets
-.env
-
-# Dependency directory
-node_modules
-bower_components
-
-# Editors
-.idea
-*.iml
-
-# OS metadata
+log/
 .DS_Store
-Thumbs.db
+npm-debug.log
+package-lock.json
+node_modules/
+coverage/
+.idea/
+*.swp
+*.js
 
-# Ignore built ts files
-dist/**/*
+dist/
+codegen/__*

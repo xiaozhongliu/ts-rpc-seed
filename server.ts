@@ -11,5 +11,6 @@ const server = new grpc.Server()
 register(server)
 
 const serverAddress = `0.0.0.0:${config.API_PORT}`
-server.bind(serverAddress, proto.getCredentials())
+// server.bind(serverAddress, proto.getCredentials())
+server.bind(serverAddress, grpc.ServerCredentials.createInsecure())
 server.start()

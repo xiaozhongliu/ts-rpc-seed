@@ -2,7 +2,6 @@ import fs from 'fs'
 import shell from 'shelljs'
 import client from '../util/client'
 import {
-    Enum,
     Package,
     Service,
     Method,

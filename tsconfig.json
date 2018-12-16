@@ -1,23 +1,18 @@
 {
+    "compileOnSave": true,
     "compilerOptions": {
         "target": "es2017",
         "module": "commonjs",
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "experimentalDecorators": true,
         "noImplicitAny": true,
-        "sourceMap": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "inlineSourceMap": true,
         "outDir": "dist",
         "baseUrl": ".",
-        "paths": {
-            "*": [
-                "node_modules/*",
-                "type/*"
-            ]
-        }
     },
     "exclude": [
         "test/*",
-        "codegen/__*"
+        "codegen/__*",
+        "node_modules*"
     ]
 }
