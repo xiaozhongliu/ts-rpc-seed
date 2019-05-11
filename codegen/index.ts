@@ -1,21 +1,20 @@
 import fs from 'fs'
+import path from 'path'
 import shell from 'shelljs'
 import { promisify } from 'util'
+import { Package } from './model'
 import deserialize from './deserialize'
-import {
-    Enum,
-    Package,
-    Service,
-    Method,
-    Message,
-    Property,
-} from './model'
 
 const readdir = promisify(fs.readdir)
 const readFile = promisify(fs.readFile)
+const protoDir = path.resolve('./', 'proto')
+const typingsDir = path.resolve('./', 'typings')
+const controllerDir = `${__dirname}/dist`
 
 async function main() {
-    const protos = await readdir('./proto')
+    recreateDirs(controllerDir)
+
+    const protos = await readdir(protoDir)
     for (const proto of protos) {
         const content = await readFile(`./proto/${proto}`)
         generate(deserialize(content.toString()))
@@ -27,36 +26,32 @@ main()
  * generate ts files from AST
  */
 function generate(pack: Package) {
-    console.log('\nfinal AST: ', JSON.stringify(pack, undefined, '    '))
+    console.log(`\nfinal AST: ${JSON.stringify(pack, undefined, '    ')}\n`)
 
-    const packDir = `${__dirname}/__${pack.name}`
-    const typeDir = `typings/${pack.name}`
-    recreateDirs(packDir, typeDir)
+    const packDir = `${typingsDir}/${pack.name}`
+    recreateDirs(packDir)
 
     /**
      * generate ctrl
      */
     pack.services.forEach(service => {
-        const fileName = `${service.name.toLowerCase()}-ctrl.ts`
-        const stream = fs.createWriteStream(`${packDir}/${fileName}`)
+        const fileName = `${service.name.toLowerCase()}.ts`
+        const stream = fs.createWriteStream(`${controllerDir}/${fileName}`)
 
         const imports = service.methods.map(({ response }) => `import ${response.name} from '../typings/${pack.name}/${response.name}'`)
         const distinctImports = [...new Set(imports)]
-        stream.write(`${distinctImports.join('\n')}\n
-export default {\n
-    // proto package name
-    package: '${pack.name}',
-    // proto service name
-    service: '${service.name}',`,
+        stream.write(`import { Controller, Context } from '../framework'
+${distinctImports.join('\n')}\n
+export default class ${service.name}Controller extends Controller {`,
         )
 
         for (const method of service.methods) {
             stream.write(`\n
-    async ${ method.name}(req: ${method.request.name}) {
+    async ${ method.name}(ctx: Context, req: ${method.request.name}): Promise<${method.response.name}> {
         return new ${method.response.name}(
             ${ method.response.properties.map(property => 'null,').join('\n            ')}
         )
-    },`,
+    }`,
             )
         }
 
@@ -71,20 +66,19 @@ export default {\n
     pack.messages.forEach(message => {
         const isRequestType = message.name.includes('Request')
         const fileName = `${message.name}${isRequestType ? '.d' : ''}.ts`
-        const stream = fs.createWriteStream(`${typeDir}/${fileName}`)
+        const stream = fs.createWriteStream(`${packDir}/${fileName}`)
 
         if (isRequestType) {
-            stream.write(`interface ${message.name} extends Req {\n
-    body: {${ message.properties.map(property => `\n        ${property.name}: ${property.type}`).join()}
-    }
+            stream.write(`interface ${message.name} extends Req {
+${ message.properties.map(property => `\n        ${property.name}: ${property.type}`).join()}
 }\n`,
             )
         } else {
-            stream.write(`export default class ${message.name} {\n
+            stream.write(`export default class ${message.name} {
+${ message.properties.map(property => `\n    ${property.name}: ${property.type}`).join()}\n
     constructor(${ message.properties.map(property => `${property.name}: ${property.type}`).join(', ')}) {
 ${ message.properties.map(property => `        this.${property.name} = ${property.name}`).join('\n')}
     }
-${ message.properties.map(property => `\n    ${property.name}: ${property.type}`).join()}
 }\n`,
             )
         }

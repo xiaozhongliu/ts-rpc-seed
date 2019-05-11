@@ -4,16 +4,14 @@ import HelloReply from '../typings/greeter/HelloReply'
 export default class GreeterController extends Controller {
 
     async sayHello(ctx: Context, req: HelloRequest): Promise<HelloReply> {
-        const message = `Hello ${req.name}`
         return new HelloReply(
-            message,
+            `Hello ${req.name}`,
         )
     }
 
     async sayGoodbye(ctx: Context, req: HelloRequest): Promise<HelloReply> {
-        const message = `Goodbye ${req.name}`
         return new HelloReply(
-            message,
+            `Goodbye ${req.name}`,
         )
     }
 }
