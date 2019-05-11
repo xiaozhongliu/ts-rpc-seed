@@ -10,10 +10,8 @@ export default async (ctx: Context, req: object, next: Function) => {
     const end = dayjs()
 
     ctx.app.logger.request({
-        '@timestamp': start.format('YYYY-MM-DD HH:mm:ss.SSS'),
         '@duration': end.diff(start, 'millisecond'),
-        controller: ctx.controller,
-        action: ctx.action,
+        controller: `${ctx.controller}.${ctx.action}`,
         metedata: JSON.stringify(ctx.metadata),
         request: JSON.stringify(req),
         response: JSON.stringify(ctx.response),

@@ -1,4 +1,7 @@
 import log4js from 'log4js'
+import 'dayjs/locale/zh-cn'
+import dayjs from 'dayjs'
+dayjs.locale('zh-cn')
 import { Framework } from '../class'
 
 export default async ({ config }: Framework) => {
@@ -43,7 +46,8 @@ export default async ({ config }: Framework) => {
         return JSON.stringify({
             '@env': process.env.NODE_ENV,
             '@region': process.env.REGION,
-            '@level': level,
+            '@timestamp': dayjs(),
+            level: level,
             ...data,
         })
     }
