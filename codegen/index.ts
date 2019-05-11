@@ -70,8 +70,7 @@ export default class ${service.name}Controller extends Controller {`,
 
         if (isRequestType) {
             stream.write(`interface ${message.name} extends Req {
-${ message.properties.map(property => `\n        ${property.name}: ${property.type}`).join()}
-}\n`,
+${ message.properties.map(property => `    ${property.name}: ${property.type}\n`).join()}}\n`,
             )
         } else {
             stream.write(`export default class ${message.name} {

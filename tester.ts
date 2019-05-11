@@ -22,9 +22,9 @@ const sayHello = promisify(client.sayHello).bind(client)
 const sayGoodbye = promisify(client.sayGoodbye).bind(client)
 
 async function main() {
-    const helloRes = await sayHello({ name: 'foo' })
+    const helloRes = await sayHello({ name: 'world' })
     console.log('Greeting:', helloRes.message)
-    const goodbyeRes = await sayGoodbye({ name: 'foo' })
+    const goodbyeRes = await sayGoodbye({ name: 'world' })
     console.log('Leaving:', goodbyeRes.message)
 }
 main()
