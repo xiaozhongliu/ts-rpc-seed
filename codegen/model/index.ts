@@ -1,4 +1,4 @@
-import * as Enum from './enum'
+import Enum from './enum'
 import Package from './package'
 import Service from './service'
 import Method from './method'
