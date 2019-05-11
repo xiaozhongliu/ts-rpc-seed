@@ -1,14 +1,14 @@
 # ts-rpc-seed
 > a typescript node rpc seed project.
 
-## Build Setup
+## QuickStart
 
-``` bash
-# install dependencies
+```bash
+# install
 npm i
 
-# compile in watch mode
-npm run build
+# compile
+npm run tsc
 
 # debug with ts-node directly
 vscode -> F5 -> tsnode

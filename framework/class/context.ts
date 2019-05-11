@@ -19,13 +19,12 @@ export default class Context {
     get metadata() {
         return this._metadata
     }
+    get logger() {
+        return this._app.logger
+    }
 
     // assignable properties
     response: object
-
-    get logger() {
-        return this.app.logger
-    }
 
     constructor(
         app: Framework,

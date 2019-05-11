@@ -9,7 +9,7 @@ export default async (ctx: Context, req: object, next: Function) => {
     await next()
     const end = dayjs()
 
-    ctx.app.logger.request({
+    ctx.logger.request({
         '@duration': end.diff(start, 'millisecond'),
         controller: `${ctx.controller}.${ctx.action}`,
         metedata: JSON.stringify(ctx.metadata),
