@@ -1,21 +1,11 @@
 syntax = "proto3";
-
-option java_multiple_files = true;
-option java_package = "io.grpc.examples.greeter";
-option java_outer_classname = "GreeterProto";
-option objc_class_prefix = "HLW";
-
 package greeter;
 
 service Greeter {
-    rpc sayHello (HelloRequest) returns (HelloReply) {}
-    rpc sayGoodbye (HelloRequest) returns (HelloReply) {}
+  rpc sayHello(HelloRequest) returns (HelloReply) {}
+  rpc sayGoodbye(HelloRequest) returns (HelloReply) {}
 }
 
-message HelloRequest {
-    string name = 1;
-}
+message HelloRequest { string name = 1; }
 
-message HelloReply {
-    string message = 1;
-}
+message HelloReply { string message = 1; }

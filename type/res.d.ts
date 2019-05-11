@@ -1,4 +1,0 @@
-interface Res {
-
-    data?: object
-}

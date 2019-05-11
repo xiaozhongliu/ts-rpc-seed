@@ -1,10 +1,10 @@
-export default {
+export default (appInfo: AppInfo): Config => {
+    return {
+        // basic
+        PORT: 50051,
 
-    // basic
-    API_NAME: 'ts-rpc-seed',
-    API_PORT: 50051,
-
-    // logs location
-    API_LOG_PATH: `${global.rootdir}/log/`,
-    TASK_LOG_PATH: `${global.rootdir}/log/task/`,
+        // log
+        COMMON_LOG_PATH: `${appInfo.rootPath}/log/common`,
+        REQUEST_LOG_PATH: `${appInfo.rootPath}/log/request`,
+    }
 }

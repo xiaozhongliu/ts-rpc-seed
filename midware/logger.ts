@@ -1,23 +1,21 @@
-import dayjs from 'dayjs'
+
+import { Context } from '../framework'
 import 'dayjs/locale/zh-cn'
-import config from '../config'
-import { logger as initLogger } from '../util'
-
+import dayjs from 'dayjs'
 dayjs.locale('zh-cn')
-const logger = initLogger(config.API_LOG_PATH)
 
-export default async (req: Req, res: Res, next: Function) => {
-
+export default async (ctx: Context, req: object, next: Function) => {
     const start = dayjs()
     await next()
     const end = dayjs()
 
-    logger.info('%s  [ %s.%s ]  %sms  -  req: %s  -  res: %s',
-        end.format('YYYY-MM-DD HH:mm:ss.SSS'),
-        req.controller,
-        req.action,
-        end.diff(start, 'millisecond'),
-        JSON.stringify(req.body),
-        JSON.stringify(res.data),
-    )
+    ctx.app.logger.request({
+        '@timestamp': start.format('YYYY-MM-DD HH:mm:ss.SSS'),
+        '@duration': end.diff(start, 'millisecond'),
+        controller: ctx.controller,
+        action: ctx.action,
+        metedata: JSON.stringify(ctx.metadata),
+        request: JSON.stringify(req),
+        response: JSON.stringify(ctx.response),
+    })
 }

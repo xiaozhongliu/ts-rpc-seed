@@ -12,6 +12,7 @@
         ],
         "jsdoc-format": true,
         "no-internal-module": true,
+        "no-null-keyword": true,
         "no-trailing-whitespace": true,
         "no-var-keyword": true,
         "one-line": [
@@ -39,7 +40,8 @@
             true,
             {
                 "multiline": "always",
-                "singleline": "never"
+                "singleline": "never",
+                "esSpecCompliant": true
             }
         ],
         "triple-equals": true,
