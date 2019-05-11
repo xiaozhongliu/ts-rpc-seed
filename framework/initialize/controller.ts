@@ -4,7 +4,8 @@ import { Framework, Controller, Context } from '../class'
 import util from '../util'
 
 export default async (app: Framework) => {
-    const controllerPath = `${app.appInfo.rootPath}/controller`
+    const possibleDist = /\.ts$/.test(__filename) ? '' : '/dist'
+    const controllerPath = `${app.appInfo.rootPath}${possibleDist}/controller`
     const files = await fs.readdir(controllerPath)
     for (const file of files) {
 

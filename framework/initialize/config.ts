@@ -2,21 +2,27 @@ import { promises as fs } from 'fs'
 import { Framework } from '../class'
 
 export default async ({ appInfo }: Framework) => {
-    const configPath = `${appInfo.rootPath}/config`
+    const possibleDist = /\.ts$/.test(__filename) ? '' : '/dist'
+    const configPath = `${appInfo.rootPath}${possibleDist}/config`
     const files = await fs.readdir(configPath)
     const env = process.env.NODE_ENV
     let defaultConfig: Function
     let envConfig: Function
 
     for (const file of files) {
-        if (!['config.default.ts', `config.${env}.ts`].includes(file)) {
+        if (![
+            'config.default.ts',
+            'config.default.js',
+            `config.${env}.ts`,
+            `config.${env}.js`,
+        ].includes(file)) {
             continue
         }
         const module = await import(`${configPath}/${file}`)
         const config: Function = module.default
-        if (file === 'config.default.ts') {
+        if (file.startsWith('config.default.')) {
             defaultConfig = config
-        } else if (file === `config.${env}.ts`) {
+        } else if (file.startsWith(`config.${env}.`)) {
             envConfig = config
         }
     }
