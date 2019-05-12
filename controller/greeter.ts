@@ -1,4 +1,4 @@
-import { Controller, Context } from '../framework'
+import { Controller, Context } from 'fong'
 import HelloReply from '../typings/greeter/HelloReply'
 
 export default class GreeterController extends Controller {

@@ -40,7 +40,7 @@ function generate(pack: Package) {
 
         const imports = service.methods.map(({ response }) => `import ${response.name} from '../typings/${pack.name}/${response.name}'`)
         const distinctImports = [...new Set(imports)]
-        stream.write(`import { Controller, Context } from '../framework'
+        stream.write(`import { Controller, Context } from 'fong'
 ${distinctImports.join('\n')}\n
 export default class ${service.name}Controller extends Controller {`,
         )

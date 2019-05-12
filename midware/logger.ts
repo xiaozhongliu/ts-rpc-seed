@@ -1,5 +1,5 @@
 
-import { Context } from '../framework'
+import { Context } from 'fong'
 import 'dayjs/locale/zh-cn'
 import dayjs from 'dayjs'
 dayjs.locale('zh-cn')

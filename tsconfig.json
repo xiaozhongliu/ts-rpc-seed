@@ -22,7 +22,7 @@
             "*": [
                 "node_modules/*",
                 "typings/*",
-            ]
+            ],
         },
         "outDir": "dist",
     },
