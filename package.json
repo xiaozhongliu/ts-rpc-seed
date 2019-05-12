@@ -7,10 +7,10 @@
     "private": true,
     "license": "MIT",
     "scripts": {
-        "start": "npm run watch-node",
-        "build": "npm run watch-ts",
+        "start": "npm run tsc && node dist/app.js",
+        "watch": "npm run watch-node",
         "watch-node": "nodemon --inspect dist/app.js",
-        "watch-ts": "tsc -w",
+        "watch-ts": "tsc -w -p tsconfig.json",
         "test": "jest --silent --verbose --forceExit",
         "tsc": "rm -rf dist && tsc -p tsconfig.json",
         "clean": "rm -rf dist"
