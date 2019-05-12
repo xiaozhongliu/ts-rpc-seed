@@ -9,6 +9,7 @@
             "type": "node",
             "request": "launch",
             "protocol": "inspector",
+            "preLaunchTask": "npm: tsc",
             "runtimeArgs": [
                 "-r",
                 "ts-node/register"
