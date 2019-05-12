@@ -9,7 +9,8 @@
             "type": "node",
             "request": "launch",
             "protocol": "inspector",
-            "preLaunchTask": "npm: tsc",
+            "preLaunchTask": "tsc-before-debugging",
+            "internalConsoleOptions": "openOnSessionStart",
             "runtimeArgs": [
                 "-r",
                 "ts-node/register"
@@ -23,6 +24,7 @@
             "type": "node",
             "request": "launch",
             "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart",
             "runtimeArgs": [
                 "-r",
                 "ts-node/register"

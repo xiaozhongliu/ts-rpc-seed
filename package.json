@@ -16,7 +16,7 @@
         "clean": "rm -rf dist"
     },
     "dependencies": {
-        "fong": "^0.1.6"
+        "fong": "^0.1.7"
     },
     "devDependencies": {
         "@types/shelljs": "^0.8.5",
